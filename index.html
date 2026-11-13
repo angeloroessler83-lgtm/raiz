@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Raiz — diagnóstico de Matemática</title>
+<meta name="theme-color" content="#f4f1ea">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Raiz">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icone-512.png">
+<link rel="icon" href="icone-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f4f1ea;--card:#fffdf8;--ink:#141414;--mute:#6b665d;--line:#ddd6c8;--acc:#ff5a1f;--ok:#1f8a4c;--bad:#d23b2a;--warn:#c98a00;--soft:#ebe5d8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.45 Inter,system-ui,sans-serif}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.wrap{max-width:560px;margin:0 auto;padding:20px 18px 48px;min-height:100vh}
+h1,h2,.big{font-family:Anton,Impact,sans-serif;font-weight:400;letter-spacing:.01em;text-transform:uppercase;line-height:1}
+h1{font-size:52px;margin:8px 0 6px}
+h2{font-size:30px;margin:28px 0 10px}
+.kicker{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+.mute{color:var(--mute)}
+.small{font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:10px 0}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px}
+.btn{display:block;width:100%;padding:15px 18px;background:var(--ink);color:#fff;font-weight:700;font-size:16px;margin-top:10px}
+.btn.alt{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.btn.acc{background:var(--acc)}
+.btn:disabled{opacity:.35;cursor:default}
+.link{background:none;color:var(--mute);text-decoration:underline;padding:8px 0;font-size:14px}
+.row{display:flex;gap:10px;align-items:center}
+.sp{flex:1}
+.prof{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);padding:14px 16px;margin:8px 0}
+.av{width:44px;height:44px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-family:Anton,sans-serif;font-size:22px}
+input,select{font:inherit;width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;margin-top:6px}
+label{display:block;margin-top:14px;font-weight:600;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{padding:10px 14px;border:1.5px solid var(--line);background:#fff;border-radius:999px;font-weight:600}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.bar{height:6px;background:var(--soft);border-radius:9px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--acc);transition:width .4s}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--soft);padding:5px 9px;border-radius:6px}
+.stem{font-size:20px;line-height:1.4;margin:16px 0 18px;font-weight:500}
+.stem table{border-collapse:collapse;margin:10px 0;font-size:16px}
+.stem td,.stem th{border:1px solid var(--line);padding:6px 10px;text-align:center;background:#fff}
+.opt{display:block;width:100%;text-align:left;padding:15px 16px;margin:8px 0;background:var(--card);border:1.5px solid var(--line);font-size:17px;border-radius:12px}
+.opt.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.opt.ns{border-style:dashed;color:var(--mute);font-size:15px}
+.opt.ns.on{color:#fff}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;transition:.3s;max-width:90vw;text-align:center;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat b{display:block;font-family:Anton,sans-serif;font-weight:400;font-size:30px;line-height:1}
+.stat span{font-size:12px;color:var(--mute)}
+.lvl{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.lvl:last-child{border:0}
+.lvl .nm{flex:1;font-weight:600;font-size:15px}
+.steps{display:flex;gap:3px}
+.steps i{width:22px;height:22px;border-radius:5px;background:var(--soft);font-style:normal;font-size:10px;font-weight:700;display:grid;place-items:center;color:var(--mute)}
+.steps i.ok{background:var(--ok);color:#fff}
+.steps i.bad{background:var(--bad);color:#fff}
+.steps i.na{background:transparent;border:1px dashed var(--line)}
+.root{border-left:4px solid var(--acc)}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 7px;border-radius:5px;background:var(--soft);margin-right:4px}
+.pill.ok{background:#dcefe3;color:var(--ok)}.pill.bad{background:#f6dcd8;color:var(--bad)}.pill.warn{background:#f6ebcc;color:#8a6000}
+.ans{padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
+.ans:last-child{border:0}
+.tabs{display:flex;gap:6px;margin:14px 0 4px}
+.tabs button{flex:1;padding:10px;background:var(--soft);font-weight:600;font-size:14px}
+.tabs button.on{background:var(--ink);color:#fff}
+.note{font-size:13px;background:#fff6d6;border:1px solid #efdc9b;border-radius:10px;padding:10px 12px;margin:10px 0}
+.pin{font-family:Anton,sans-serif;font-size:34px;letter-spacing:.4em;text-align:center}
+.hero{font-family:Anton,sans-serif;font-size:88px;line-height:.9;color:var(--acc)}
+.fade{animation:fd .35s ease}
+@keyframes fd{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><p class="mute">Carregando…</p></div>
+<div class="toast" id="toast"></div>
+<script>
+const SK = [{"c":"EF05MA01","g":5,"a":"Números","n":"Números naturais até centenas de milhar","p":[],"l":100,"d":"S","q":"Qual é o número <b>trezentos e quatro mil e sessenta</b>?","o":["304.060","304.600","300.460","34.060"],"e":["trocou a ordem das casas","posicionou o 4 e o 60 nas casas erradas","esqueceu o zero que segura uma casa"]},{"c":"EF05MA02","g":5,"a":"Números","n":"Ler, escrever e ordenar decimais","p":["EF05MA01"],"l":98,"d":"S","q":"Qual destes números é o <b>maior</b>?","o":["0,8","0,75","0,125","0,09"],"e":["achou que mais algarismos = maior","achou que mais algarismos = maior","ignorou o valor da posição"]},{"c":"EF05MA03","g":5,"a":"Números","n":"Representar frações (parte do todo e divisão)","p":[],"l":66,"d":"S","q":"Uma pizza foi cortada em 8 pedaços iguais e João comeu 3. Que fração da pizza ele comeu?","o":["3/8","3/5","8/3","5/8"],"e":["comparou comido com o que sobrou","inverteu numerador e denominador","contou o que sobrou"]},{"c":"EF05MA04","g":5,"a":"Números","n":"Frações equivalentes","p":["EF05MA03"],"l":63,"d":"S","q":"Qual fração é <b>equivalente</b> a 2/3?","o":["8/12","4/5","2/6","3/4"],"e":["somou o mesmo número em cima e embaixo","mudou só o denominador","somou 1 em cima e embaixo"]},{"c":"EF05MA05","g":5,"a":"Números","n":"Comparar frações e decimais na reta","p":["EF05MA02","EF05MA04"],"l":61,"d":"S","q":"Qual destes números é o <b>maior</b>: 1/2, 0,4, 3/5 ou 0,55?","o":["3/5","0,55","1/2","0,4"],"e":["achou que mais algarismos = maior","não converteu fração em decimal","não comparou os valores"]},{"c":"EF05MA06","g":5,"a":"Números","n":"Porcentagens básicas (10%, 25%, 50%, 75%)","p":["EF05MA04"],"l":8,"d":"S","q":"Quanto é <b>25% de 80</b>?","o":["20","25","40","8"],"e":["copiou o número da porcentagem","calculou 50%","calculou 10%"]},{"c":"EF05MA07","g":5,"a":"Números","n":"Adição e subtração com naturais e decimais","p":["EF05MA02"],"l":85,"d":"S","q":"Quanto é <b>8,4 − 2,75</b>?","o":["5,65","6,35","5,75","6,65"],"e":["subtraiu o menor do maior em cada casa","errou o empréstimo","errou o empréstimo"]},{"c":"EF05MA08","g":5,"a":"Números","n":"Multiplicação e divisão com naturais e decimais","p":["EF05MA07"],"l":84,"d":"S","q":"Um caderno custa R$ 4,50. Quanto custam <b>6 cadernos</b>?","o":["R$ 27,00","R$ 24,30","R$ 2,70","R$ 270,00"],"e":["multiplicou inteiros e centavos separados","colocou a vírgula no lugar errado","colocou a vírgula no lugar errado"]},{"c":"EF05MA09","g":5,"a":"Números","n":"Contagem pelo princípio multiplicativo (inicial)","p":["EF05MA08"],"l":3,"d":"S","q":"Uma lanchonete tem 3 tipos de pão e 4 tipos de recheio. Quantos sanduíches diferentes dá para montar com 1 pão e 1 recheio?","o":["12","7","4","24"],"e":["somou em vez de multiplicar","contou só os recheios","dobrou sem motivo"]},{"c":"EF05MA10","g":5,"a":"Álgebra","n":"Igualdade se mantém ao operar os dois lados","p":["EF05MA08"],"l":32,"d":"S","q":"Uma balança está equilibrada: num prato há 2 caixas iguais e no outro um peso de 10 kg. Se tiramos 1 caixa, o que fazer para continuar equilibrada?","o":["Tirar 5 kg do outro prato","Tirar 1 kg do outro prato","Não mexer no outro prato","Tirar 10 kg do outro prato"],"e":["tirou a quantidade de caixas, não o peso","não manteve a igualdade","não percebeu que cada caixa pesa 5 kg"]},{"c":"EF05MA11","g":5,"a":"Álgebra","n":"Igualdade com um termo desconhecido","p":["EF05MA10"],"l":31,"d":"S","q":"Que número completa: <b>□ + 15 = 42</b>?","o":["27","57","37","42"],"e":["somou em vez de subtrair","errou a subtração","repetiu o resultado"]},{"c":"EF05MA12","g":5,"a":"Álgebra","n":"Proporcionalidade direta (receitas, escalas)","p":["EF05MA08"],"l":23,"d":"S","q":"Uma receita usa 3 ovos para 2 xícaras de farinha. Para <b>6 xícaras</b> de farinha, quantos ovos?","o":["9","7","6","12"],"e":["somou a diferença em vez de multiplicar","copiou o número de xícaras","multiplicou pelo fator errado"]},{"c":"EF05MA13","g":5,"a":"Álgebra","n":"Dividir em partes desiguais (dobro, triplo)","p":["EF05MA03","EF05MA08"],"l":15,"d":"S","q":"Ana e Bia vão dividir 30 figurinhas, e Ana deve ficar com o <b>dobro</b> de Bia. Com quantas Bia fica?","o":["10","15","20","5"],"e":["dividiu em partes iguais","deu a parte de Ana","dividiu por 6"]},{"c":"EF05MA14","g":5,"a":"Geometria","n":"Localização no plano (mapas, coordenadas)","p":[],"l":9,"d":"S","q":"Num mapa com colunas A, B, C, D e linhas 1 a 4, a escola está em <b>B2</b>. A praça fica 2 colunas à direita e 1 linha acima (linha de número maior). Onde fica a praça?","o":["D3","C3","D1","B4"],"e":["andou só 1 coluna","andou para o lado errado na linha","trocou colunas por linhas"]},{"c":"EF05MA15","g":5,"a":"Geometria","n":"Plano cartesiano, 1º quadrante","p":["EF05MA14"],"l":8,"d":"S","q":"No plano cartesiano, o ponto <b>(4, 2)</b> fica:","o":["4 para a direita e 2 para cima","2 para a direita e 4 para cima","4 para a esquerda e 2 para baixo","na posição 6 do eixo"],"e":["trocou x e y","errou o sentido dos eixos","somou as coordenadas"]},{"c":"EF05MA16","g":5,"a":"Geometria","n":"Planificações de sólidos","p":[],"l":2,"d":"S","q":"Uma planificação tem <b>2 triângulos e 3 retângulos</b>. Que sólido ela forma?","o":["Prisma de base triangular","Pirâmide de base triangular","Cubo","Pirâmide de base quadrada"],"e":["confundiu prisma com pirâmide","não contou as faces","confundiu as faces"]},{"c":"EF05MA17","g":5,"a":"Geometria","n":"Polígonos: lados, vértices e ângulos","p":[],"l":32,"d":"S","q":"Um polígono tem 6 lados. Quantos vértices e quantos ângulos internos ele tem?","o":["6 vértices e 6 ângulos","6 vértices e 12 ângulos","12 vértices e 6 ângulos","5 vértices e 6 ângulos"],"e":["dobrou os ângulos","dobrou os vértices","errou a contagem de vértices"]},{"c":"EF05MA18","g":5,"a":"Geometria","n":"Ampliação e redução de figuras","p":["EF05MA17","EF05MA12"],"l":7,"d":"S","q":"Um retângulo de 3 cm por 5 cm foi ampliado e o lado de 3 cm virou 6 cm. Para não deformar, o lado de 5 cm vira:","o":["10 cm","8 cm","5 cm","15 cm"],"e":["somou em vez de multiplicar","não ampliou o outro lado","multiplicou pelo fator errado"]},{"c":"EF05MA19","g":5,"a":"Grandezas e medidas","n":"Medidas e conversão de unidades","p":["EF05MA02","EF05MA08"],"l":12,"d":"S","q":"Quantos centímetros há em <b>2,5 metros</b>?","o":["250","25","2.500","205"],"e":["multiplicou por 10","multiplicou por 1000","escreveu a vírgula como zero"]},{"c":"EF05MA20","g":5,"a":"Grandezas e medidas","n":"Perímetro e área não andam juntos","p":["EF05MA19"],"l":11,"d":"S","q":"Dois terrenos têm o mesmo perímetro, 16 m: um mede 4 m × 4 m e o outro 2 m × 6 m. O que é verdade?","o":["O de 4 × 4 tem área maior","Os dois têm a mesma área","O de 2 × 6 tem área maior","Área e perímetro são sempre o mesmo número"],"e":["achou que mesmo perímetro = mesma área","não calculou as áreas","confundiu área com perímetro"]},{"c":"EF05MA21","g":5,"a":"Grandezas e medidas","n":"Volume por empilhamento de cubos","p":["EF05MA08"],"l":10,"d":"S","q":"Uma caixa está cheia de cubinhos: 4 de comprimento, 3 de largura e 2 de altura. Quantos cubinhos há?","o":["24","9","12","18"],"e":["somou as medidas","contou só uma camada","errou a multiplicação"]},{"c":"EF05MA22","g":5,"a":"Probabilidade e estatística","n":"Resultados possíveis de um experimento","p":[],"l":5,"d":"S","q":"Lançando um dado comum, quais resultados são <b>números pares</b>?","o":["2, 4 e 6","1, 3 e 5","2 e 4","Só o 6"],"e":["confundiu par com ímpar","esqueceu um resultado","esqueceu resultados"]},{"c":"EF05MA23","g":5,"a":"Probabilidade e estatística","n":"Probabilidade em resultados igualmente prováveis","p":["EF05MA22","EF05MA03"],"l":4,"d":"S","q":"Numa caixa há 3 bolas vermelhas e 5 azuis. Tirando uma sem olhar, qual a chance de sair <b>vermelha</b>?","o":["3/8","3/5","1/2","5/8"],"e":["comparou vermelhas com azuis, não com o total","achou que são só duas opções iguais","calculou a das azuis"]},{"c":"EF05MA24","g":5,"a":"Probabilidade e estatística","n":"Ler tabelas e gráficos","p":[],"l":15,"d":"S","q":"<table><tr><th>Dia</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th></tr><tr><td>Sorvetes</td><td>12</td><td>18</td><td>9</td><td>15</td></tr></table>Em que dia se vendeu mais, e quantos a mais que na quarta?","o":["Terça, 9 a mais","Terça, 18 a mais","Quinta, 6 a mais","Quarta, 9 a mais"],"e":["leu o valor em vez da diferença","errou o dia de maior venda","confundiu maior com menor"]},{"c":"EF05MA25","g":5,"a":"Probabilidade e estatística","n":"Organizar dados de pesquisa em tabelas e gráficos","p":["EF05MA24"],"l":5,"d":"P","q":"Numa pesquisa, 12 alunos escolheram futebol, 8 vôlei e 5 natação. Num gráfico de barras, qual barra é a mais alta e quantos responderam ao todo?","o":["Futebol; 25 alunos","Natação; 25 alunos","Futebol; 12 alunos","Vôlei; 20 alunos"],"e":["inverteu a escala","não somou o total","errou a leitura"]},{"c":"EF06MA01","g":6,"a":"Números","n":"Comparar naturais e decimais na reta","p":["EF05MA01","EF05MA05"],"l":26,"d":"S","q":"Qual sequência está em ordem <b>do menor para o maior</b>?","o":["0,7 · 1,05 · 1,5 · 12","0,7 · 1,5 · 1,05 · 12","1,05 · 1,5 · 0,7 · 12","12 · 1,5 · 1,05 · 0,7"],"e":["achou que 1,05 > 1,5 por ter mais algarismos","ignorou a parte inteira","ordenou ao contrário"]},{"c":"EF06MA02","g":6,"a":"Números","n":"Sistema de numeração decimal: base e valor posicional","p":["EF05MA01"],"l":0,"d":"S","q":"No número <b>47.382</b>, quanto vale o algarismo 7?","o":["7.000","7","700","70.000"],"e":["leu o algarismo, não o valor da posição","errou a posição","errou a posição"]},{"c":"EF06MA03","g":6,"a":"Números","n":"Cálculos com naturais (mental e escrito)","p":["EF05MA08"],"l":23,"d":"S","q":"Um ônibus leva 42 passageiros. Quantos ônibus são necessários para levar <b>300 alunos</b>?","o":["8","7","7,14","6"],"e":["ignorou o resto da divisão","não interpretou o resultado no problema","errou a divisão"]},{"c":"EF06MA04","g":6,"a":"Números","n":"Algoritmo e fluxograma simples","p":["EF06MA03"],"l":2,"d":"P","q":"Regra: se o número for par, divida por 2; se for ímpar, some 1. Repita até chegar a 1. Começando em <b>6</b>, quantos passos são necessários?","o":["4","3","5","2"],"e":["pulou um passo","contou um passo a mais","parou antes do fim"]},{"c":"EF06MA05","g":6,"a":"Números","n":"Primos, múltiplos, divisores e divisibilidade","p":["EF06MA03"],"l":17,"d":"S","q":"Qual destes números é <b>primo</b>?","o":["29","21","27","39"],"e":["achou que todo ímpar é primo","achou que todo ímpar é primo","achou que todo ímpar é primo"]},{"c":"EF06MA06","g":6,"a":"Números","n":"Problemas de múltiplo e divisor","p":["EF06MA05"],"l":16,"d":"S","q":"Quais são <b>todos os divisores</b> de 18?","o":["1, 2, 3, 6, 9, 18","2, 3, 6, 9","18, 36, 54","1, 2, 3, 4, 6, 9, 18"],"e":["esqueceu o 1 e o próprio número","confundiu divisor com múltiplo","incluiu número que não divide"]},{"c":"EF06MA07","g":6,"a":"Números","n":"Comparar e ordenar frações; equivalentes","p":["EF05MA04","EF05MA05"],"l":51,"d":"S","q":"Qual fração é maior: <b>3/4 ou 5/8</b>?","o":["3/4","5/8, porque 5 e 8 são maiores","São iguais","Não dá para comparar"],"e":["comparou os números soltos, não a fração","não usou frações equivalentes","não sabe igualar denominadores"]},{"c":"EF06MA08","g":6,"a":"Números","n":"Passar de fração para decimal e vice-versa","p":["EF06MA07","EF05MA02"],"l":29,"d":"S","q":"A fração <b>3/5</b> em número decimal é:","o":["0,6","3,5","0,35","0,53"],"e":["juntou os números com vírgula","juntou os números com vírgula","juntou os números invertidos"]},{"c":"EF06MA09","g":6,"a":"Números","n":"Fração de uma quantidade","p":["EF06MA07","EF05MA08"],"l":24,"d":"S","q":"Quanto é <b>2/5 de 30</b>?","o":["12","6","15","75"],"e":["só dividiu por 5","calculou a metade","dividiu pela fração"]},{"c":"EF06MA10","g":6,"a":"Números","n":"Somar e subtrair frações","p":["EF06MA07","EF06MA06"],"l":14,"d":"S","q":"Quanto é <b>1/2 + 1/3</b>?","o":["5/6","2/5","2/6","1/5"],"e":["somou numeradores e denominadores","somou só os numeradores","errou a soma"]},{"c":"EF06MA11","g":6,"a":"Números","n":"Quatro operações com decimais; arredondar","p":["EF05MA08","EF06MA08"],"l":22,"d":"S","q":"Quanto é <b>1,5 × 0,4</b>?","o":["0,6","6","0,06","1,9"],"e":["perdeu a vírgula","contou casas decimais demais","somou em vez de multiplicar"]},{"c":"EF06MA12","g":6,"a":"Números","n":"Estimar e arredondar para potências de 10","p":["EF06MA01"],"l":0,"d":"S","q":"Uma cidade tem 48.712 habitantes. Arredondando para o <b>milhar mais próximo</b>:","o":["49.000","48.000","50.000","48.700"],"e":["cortou em vez de arredondar","arredondou para a dezena de milhar","arredondou para a centena"]},{"c":"EF06MA13","g":6,"a":"Números","n":"Porcentagem por proporcionalidade","p":["EF05MA06","EF06MA09","EF05MA12"],"l":7,"d":"S","q":"Numa turma de 40 alunos, 30% usam óculos. Quantos alunos usam óculos?","o":["12","30","10","13"],"e":["copiou o número da porcentagem","dividiu 40 por 4","errou a conta"]},{"c":"EF06MA14","g":6,"a":"Álgebra","n":"Usar a igualdade para achar valor desconhecido","p":["EF05MA11"],"l":30,"d":"S","q":"Se <b>3 × n = 24</b>, quanto vale <b>n + 5</b>?","o":["13","8","32","77"],"e":["achou n e parou","somou tudo sem resolver","multiplicou em vez de dividir"]},{"c":"EF06MA15","g":6,"a":"Álgebra","n":"Partilha desigual e razão entre as partes","p":["EF05MA13","EF06MA09"],"l":14,"d":"S","q":"R$ 900 são divididos entre dois irmãos na razão <b>1 para 2</b>. Quanto recebe quem ganha menos?","o":["R$ 300","R$ 450","R$ 600","R$ 180"],"e":["dividiu igual","deu a parte maior","dividiu por 5"]},{"c":"EF06MA16","g":6,"a":"Geometria","n":"Pares ordenados no plano cartesiano","p":["EF05MA15"],"l":7,"d":"S","q":"A(1, 1), B(5, 1) e C(5, 4) são três vértices de um retângulo. Qual é o quarto vértice?","o":["(1, 4)","(4, 1)","(4, 5)","(5, 5)"],"e":["trocou x e y","trocou x e y","não seguiu a forma do retângulo"]},{"c":"EF06MA17","g":6,"a":"Geometria","n":"Vértices, faces e arestas de prismas e pirâmides","p":["EF05MA16"],"l":1,"d":"S","q":"Um prisma de base <b>pentagonal</b> tem quantas faces?","o":["7","5","10","6"],"e":["contou só as laterais","contou vértices de uma base ×2","esqueceu uma base"]},{"c":"EF06MA18","g":6,"a":"Geometria","n":"Polígonos regulares e não regulares","p":["EF05MA17"],"l":21,"d":"S","q":"Um polígono <b>regular</b> é aquele que tem:","o":["Todos os lados e todos os ângulos iguais","Só os lados iguais","Exatamente 4 lados","Pelo menos um ângulo reto"],"e":["esqueceu dos ângulos (ex.: losango)","confundiu com quadrado","confundiu com retângulo"]},{"c":"EF06MA19","g":6,"a":"Geometria","n":"Classificar triângulos","p":["EF06MA18"],"l":11,"d":"S","q":"Um triângulo com lados de 5 cm, 5 cm e 8 cm é:","o":["Isósceles","Equilátero","Escaleno","Retângulo"],"e":["confundiu os nomes","não viu os dois lados iguais","confundiu lado com ângulo"]},{"c":"EF06MA20","g":6,"a":"Geometria","n":"Classificar quadriláteros","p":["EF06MA18"],"l":5,"d":"S","q":"Qual quadrilátero tem os <b>4 lados iguais</b>, mas não precisa ter ângulos retos?","o":["Losango","Quadrado","Retângulo","Trapézio"],"e":["esqueceu que o quadrado exige ângulos retos","confundiu lados com ângulos","confundiu os nomes"]},{"c":"EF06MA21","g":6,"a":"Geometria","n":"Figuras semelhantes (ampliar e reduzir)","p":["EF05MA18"],"l":6,"d":"S","q":"Uma foto de 10 cm × 15 cm é ampliada e a largura vira 20 cm. Sem deformar, a altura deve ser:","o":["30 cm","25 cm","20 cm","15 cm"],"e":["somou em vez de multiplicar","igualou as medidas","não ampliou"]},{"c":"EF06MA22","g":6,"a":"Geometria","n":"Construir paralelas e perpendiculares","p":["EF06MA18"],"l":3,"d":"P","q":"Duas retas <b>perpendiculares</b> formam ângulos de:","o":["90°","180°","45°","Elas não se cruzam"],"e":["confundiu com ângulo raso","chutou um ângulo","confundiu com paralelas"]},{"c":"EF06MA23","g":6,"a":"Geometria","n":"Seguir e montar instruções passo a passo","p":["EF06MA04"],"l":0,"d":"P","q":"Um robô começa virado para o <b>norte</b>. Ele anda 2 passos, vira à direita e anda 3 passos. Para onde está virado no fim?","o":["Leste","Oeste","Norte","Sul"],"e":["confundiu direita com esquerda","ignorou a virada","virou demais"]},{"c":"EF06MA24","g":6,"a":"Grandezas e medidas","n":"Problemas com medidas, área e volume (sem fórmula)","p":["EF05MA19","EF05MA20","EF05MA21"],"l":9,"d":"S","q":"Uma sala retangular mede 4 m por 5 m. Quantas placas de piso de 1 m² cobrem o chão?","o":["20","18","9","40"],"e":["calculou o perímetro","somou as medidas","dobrou a área"]},{"c":"EF06MA25","g":6,"a":"Grandezas e medidas","n":"Ângulo como abertura","p":["EF05MA17"],"l":19,"d":"S","q":"Qual ângulo entre os ponteiros é <b>maior</b>: às 3h ou às 2h?","o":["Às 3h","Às 2h","São iguais","Depende do tamanho do relógio"],"e":["errou a leitura","não comparou as aberturas","confundiu abertura com comprimento"]},{"c":"EF06MA26","g":6,"a":"Grandezas e medidas","n":"Problemas com ângulos","p":["EF06MA25"],"l":14,"d":"S","q":"Dois ângulos juntos formam um ângulo raso (180°). Um deles mede 65°. Quanto mede o outro?","o":["115°","25°","65°","295°"],"e":["usou 90° no lugar de 180°","achou que são iguais","somou em vez de subtrair"]},{"c":"EF06MA27","g":6,"a":"Grandezas e medidas","n":"Medir ângulos com transferidor","p":["EF06MA25"],"l":3,"d":"P","q":"Um transferidor mostra um ângulo que vai de 0° até a marca 130° da mesma escala. Esse ângulo é:","o":["Obtuso, de 130°","Agudo, de 50°","Reto","Agudo, de 130°"],"e":["leu a escala errada","não classificou","não sabe o que é agudo"]},{"c":"EF06MA28","g":6,"a":"Grandezas e medidas","n":"Plantas baixas e vistas aéreas","p":["EF06MA24"],"l":0,"d":"P","q":"Numa planta baixa de escala 1:100, uma parede mede 4 cm. Na realidade ela mede:","o":["4 m","40 cm","400 m","4 cm"],"e":["multiplicou por 10","errou a conversão","ignorou a escala"]},{"c":"EF06MA29","g":6,"a":"Grandezas e medidas","n":"Perímetro e área ao ampliar um quadrado","p":["EF05MA20","EF05MA12"],"l":0,"d":"S","q":"Se o lado de um quadrado <b>dobra</b>, a área:","o":["Fica 4 vezes maior","Dobra","Fica igual","Triplica"],"e":["achou que área cresce igual ao lado","não relacionou lado e área","chutou"]},{"c":"EF06MA30","g":6,"a":"Probabilidade e estatística","n":"Probabilidade em fração, decimal e porcentagem","p":["EF05MA23","EF06MA08"],"l":3,"d":"S","q":"Num dado comum, qual a chance de sair um número <b>maior que 4</b>?","o":["1/3 (cerca de 33%)","4/6","1/6","50%"],"e":["contou os números até 4","esqueceu um resultado","achou que é meio a meio"]},{"c":"EF06MA31","g":6,"a":"Probabilidade e estatística","n":"Elementos de um gráfico (eixos, legenda, fonte)","p":["EF05MA24"],"l":8,"d":"S","q":"Um gráfico tem o título “Chuva em Niterói (mm)” e, embaixo, “Fonte: INMET”. A fonte serve para:","o":["Dizer de onde vieram os dados","Mostrar a unidade de medida","Dar o título do gráfico","Indicar a escala"],"e":["confundiu fonte com unidade","confundiu fonte com título","confundiu fonte com escala"]},{"c":"EF06MA32","g":6,"a":"Probabilidade e estatística","n":"Interpretar dados e gráficos da mídia","p":["EF06MA31"],"l":4,"d":"S","q":"Uma notícia diz: “Os acidentes caíram de 200 para 150”. A queda foi de quantos por cento?","o":["25%","50%","33%","75%"],"e":["usou a diferença como porcentagem","dividiu pelo valor final","calculou o que sobrou"]},{"c":"EF06MA33","g":6,"a":"Probabilidade e estatística","n":"Planejar e coletar dados em planilhas","p":["EF05MA25"],"l":4,"d":"N"},{"c":"EF06MA34","g":6,"a":"Probabilidade e estatística","n":"Interpretar fluxogramas simples","p":[],"l":0,"d":"P","q":"Fluxograma: <i>Está chovendo?</i> Sim → leve guarda-chuva. Não → <i>Está frio?</i> Sim → leve casaco. Não → saia sem nada.<br>Não está chovendo e está frio. O que fazer?","o":["Levar casaco","Levar guarda-chuva","Sair sem nada","Levar guarda-chuva e casaco"],"e":["seguiu o caminho errado","parou na primeira pergunta","juntou caminhos"]},{"c":"EF07MA01","g":7,"a":"Números","n":"Problemas com MDC e MMC","p":["EF06MA06"],"l":0,"d":"S","q":"Um ônibus passa a cada 12 min e outro a cada 18 min. Saíram juntos às 8h. Quando saem juntos de novo?","o":["8h36","8h06","8h30","11h36"],"e":["usou o MDC no lugar do MMC","somou os intervalos","multiplicou os intervalos"]},{"c":"EF07MA02","g":7,"a":"Números","n":"Porcentagem: acréscimos e descontos","p":["EF06MA13"],"l":2,"d":"S","q":"Uma camiseta de R$ 80 está com <b>15% de desconto</b>. Quanto você paga?","o":["R$ 68","R$ 12","R$ 65","R$ 92"],"e":["deu só o valor do desconto","tirou 15 reais","somou o desconto"]},{"c":"EF07MA03","g":7,"a":"Números","n":"Números inteiros (negativos) na reta; somar e subtrair","p":["EF06MA01"],"l":24,"d":"S","q":"Quanto é <b>−3 + 7</b>?","o":["4","−10","10","−4"],"e":["somou e manteve o sinal","ignorou o sinal","errou o sinal"]},{"c":"EF07MA04","g":7,"a":"Números","n":"Operações com números inteiros","p":["EF07MA03"],"l":21,"d":"S","q":"Quanto é <b>(−4) × (−5) − 6</b>?","o":["14","−26","26","−14"],"e":["errou a regra de sinais","somou 20 + 6","errou o sinal final"]},{"c":"EF07MA05","g":7,"a":"Números","n":"Resolver o mesmo problema por caminhos diferentes","p":["EF06MA03"],"l":1,"d":"P","q":"Para calcular <b>25 × 16</b> de cabeça, qual caminho está certo?","o":["25 × 4 × 4 = 100 × 4 = 400","25 × 10 + 6 = 256","20 × 16 + 5 = 325","25 + 16 × 10 = 185"],"e":["decompôs errado","decompôs errado","misturou operações"]},{"c":"EF07MA06","g":7,"a":"Números","n":"Reconhecer problemas de mesma estrutura","p":["EF07MA05"],"l":0,"d":"P","q":"Qual problema tem a <b>mesma estrutura</b> de: “Comprei 3 pacotes com 8 balas cada. Quantas balas?”","o":["Uma sala tem 5 fileiras com 6 cadeiras cada. Quantas cadeiras?","Tinha 8 balas e ganhei 3. Quantas tenho?","Dividi 24 balas entre 3 amigos. Quanto cada um ganhou?","Tinha 8 balas e comi 3. Quantas sobraram?"],"e":["olhou os números, não a operação","confundiu com divisão","olhou os números, não a operação"]},{"c":"EF07MA07","g":7,"a":"Números","n":"Fluxograma dos passos de resolução","p":["EF06MA04"],"l":0,"d":"P","q":"Paguei 4 itens iguais com R$ 30 e recebi R$ 2 de troco. Qual a ordem certa para achar o preço de cada item?","o":["Fazer 30 − 2 e depois dividir por 4","Dividir 30 por 4 e depois tirar 2","Fazer 30 + 2 e depois dividir por 4","Multiplicar 30 por 4"],"e":["inverteu a ordem dos passos","somou o troco","escolheu a operação errada"]},{"c":"EF07MA08","g":7,"a":"Números","n":"Fração como parte, divisão, razão e operador","p":["EF06MA07","EF06MA09"],"l":14,"d":"S","q":"A fração <b>3/4</b> também pode ser vista como:","o":["3 dividido por 4, que dá 0,75","4 dividido por 3","3 + 4","3 inteiros e 4 partes"],"e":["inverteu a divisão","somou as partes","confundiu com número misto"]},{"c":"EF07MA09","g":7,"a":"Números","n":"Razão como fração","p":["EF07MA08","EF06MA15"],"l":13,"d":"S","q":"Numa sala há 12 meninas e 18 meninos. Qual a razão entre meninas e o <b>total</b> de alunos?","o":["2/5","2/3","3/5","1/2"],"e":["comparou meninas com meninos","calculou a dos meninos","chutou meio a meio"]},{"c":"EF07MA10","g":7,"a":"Números","n":"Racionais (com negativos) na reta","p":["EF07MA03","EF06MA08"],"l":0,"d":"S","q":"Qual número fica <b>entre −1 e −2</b> na reta?","o":["−1,5","−0,5","1,5","−2,5"],"e":["ficou entre 0 e −1","ignorou o sinal","passou do −2"]},{"c":"EF07MA11","g":7,"a":"Números","n":"Multiplicar e dividir racionais","p":["EF07MA04","EF06MA10","EF06MA11"],"l":13,"d":"S","q":"Quanto é <b>(−2/3) × (3/4)</b>?","o":["−1/2","1/2","−8/9","−5/7"],"e":["errou o sinal","multiplicou cruzado","somou em vez de multiplicar"]},{"c":"EF07MA12","g":7,"a":"Números","n":"Problemas com operações com racionais","p":["EF07MA11"],"l":12,"d":"S","q":"Um termômetro marcava <b>−3,5 °C</b> e a temperatura subiu 6 °C. Quanto marca agora?","o":["2,5 °C","−9,5 °C","9,5 °C","−2,5 °C"],"e":["subtraiu em vez de somar","ignorou o sinal","errou o sinal do resultado"]},{"c":"EF07MA13","g":7,"a":"Álgebra","n":"Variável e incógnita (letras)","p":["EF06MA14"],"l":29,"d":"S","q":"“O dobro de um número mais 5.” Chamando o número de x, escrevemos:","o":["2x + 5","x + 2 + 5","x² + 5","2(x + 5)"],"e":["confundiu dobro com somar 2","confundiu dobro com quadrado","dobrou o 5 também"]},{"c":"EF07MA14","g":7,"a":"Álgebra","n":"Sequências recursivas e não recursivas","p":[],"l":6,"d":"S","q":"Na sequência <b>3, 7, 11, 15, …</b> qual é o próximo termo?","o":["19","18","22","30"],"e":["errou a soma","somou o dobro","dobrou o termo"]},{"c":"EF07MA15","g":7,"a":"Álgebra","n":"Escrever a regra de uma sequência com letras","p":["EF07MA13","EF07MA14"],"l":5,"d":"S","q":"A sequência <b>5, 8, 11, 14, …</b> tem qual regra para o termo da posição n?","o":["3n + 2","n + 3","5n","3n + 5"],"e":["usou só o passo","usou só o primeiro termo","somou o primeiro termo ao 3n"]},{"c":"EF07MA16","g":7,"a":"Álgebra","n":"Expressões algébricas equivalentes","p":["EF07MA15"],"l":2,"d":"S","q":"Qual expressão é <b>equivalente</b> a 2(x + 3) + x?","o":["3x + 6","3x + 3","2x + 6","6x"],"e":["não distribuiu o 2","esqueceu o x de fora","juntou termos diferentes"]},{"c":"EF07MA17","g":7,"a":"Álgebra","n":"Proporcionalidade direta e inversa","p":["EF05MA12","EF07MA09","EF07MA13"],"l":9,"d":"S","q":"4 pedreiros levam 6 dias para fazer um muro. No mesmo ritmo, quantos dias levariam <b>8 pedreiros</b>?","o":["3","12","10","2"],"e":["tratou como proporção direta","somou","errou a proporção"]},{"c":"EF07MA18","g":7,"a":"Álgebra","n":"Equação do 1º grau (ax + b = c)","p":["EF06MA14","EF07MA04","EF07MA13"],"l":11,"d":"S","q":"Resolva: <b>3x − 7 = 11</b>","o":["x = 6","x = 4/3","x = 18","x = 12"],"e":["subtraiu 7 em vez de somar","esqueceu de dividir por 3","errou a conta"]},{"c":"EF07MA19","g":7,"a":"Geometria","n":"Transformar figuras multiplicando coordenadas","p":["EF06MA16","EF07MA04"],"l":0,"d":"S","q":"Um triângulo tem vértices (1, 1), (2, 1) e (1, 3). Multiplicando todas as coordenadas por 2, o vértice (2, 1) vira:","o":["(4, 2)","(4, 1)","(3, 2)","(2, 2)"],"e":["multiplicou só o x","somou em vez de multiplicar","multiplicou só o y"]},{"c":"EF07MA20","g":7,"a":"Geometria","n":"Simetria no plano cartesiano (eixos e origem)","p":["EF06MA16","EF07MA03"],"l":4,"d":"S","q":"Qual é o simétrico do ponto <b>(3, −2)</b> em relação ao eixo x?","o":["(3, 2)","(−3, −2)","(−3, 2)","(−2, 3)"],"e":["refletiu no eixo y","refletiu na origem","trocou x e y"]},{"c":"EF07MA21","g":7,"a":"Geometria","n":"Translação, rotação e reflexão","p":["EF06MA21"],"l":1,"d":"S","q":"Girar uma figura 180° em torno de um ponto é um exemplo de:","o":["Rotação","Translação","Reflexão","Ampliação"],"e":["confundiu girar com deslizar","confundiu girar com espelhar","confundiu com mudar o tamanho"]},{"c":"EF07MA22","g":7,"a":"Geometria","n":"Circunferência como lugar geométrico","p":[],"l":7,"d":"P","q":"Todos os pontos que ficam a <b>5 cm</b> de um ponto O formam:","o":["Uma circunferência de raio 5 cm","Uma circunferência de diâmetro 5 cm","Um quadrado","Uma reta"],"e":["confundiu raio com diâmetro","não conhece o lugar geométrico","não conhece o lugar geométrico"]},{"c":"EF07MA23","g":7,"a":"Geometria","n":"Ângulos em paralelas cortadas por transversal","p":["EF06MA26","EF06MA22"],"l":2,"d":"S","q":"Duas retas paralelas são cortadas por uma transversal. Um ângulo mede 70°. Quanto mede o seu <b>alterno interno</b>?","o":["70°","110°","20°","180°"],"e":["confundiu com suplementar","usou complementar","confundiu com a soma"]},{"c":"EF07MA24","g":7,"a":"Geometria","n":"Triângulo: condição de existência e soma 180°","p":["EF06MA19","EF06MA26"],"l":10,"d":"S","q":"Com quais medidas (em cm) é possível montar um triângulo?","o":["4, 5 e 7","2, 3 e 6","1, 2 e 3","3, 3 e 7"],"e":["não conferiu a soma dos menores","não viu que 1 + 2 = 3 não basta","não conferiu a soma dos menores"]},{"c":"EF07MA25","g":7,"a":"Geometria","n":"Rigidez dos triângulos","p":["EF07MA24"],"l":0,"d":"S","q":"Por que portões e telhados usam reforços em forma de <b>triângulo</b>?","o":["O triângulo não se deforma sem mudar o tamanho dos lados","Porque é mais bonito","Porque sempre usa menos material","Porque o quadrado não tem ângulos"],"e":["motivo estético","motivo falso","ideia errada sobre o quadrado"]},{"c":"EF07MA26","g":7,"a":"Geometria","n":"Algoritmo para construir triângulo","p":["EF07MA24"],"l":0,"d":"P","q":"Para construir um triângulo de lados 6 cm, 4 cm e 5 cm com régua e compasso, o caminho certo é:","o":["Traçar o lado de 6 cm e, das pontas, marcar arcos de 4 cm e 5 cm","Desenhar primeiro um ângulo reto","Traçar uma circunferência de raio 15 cm","Medir os ângulos com o transferidor primeiro"],"e":["supôs triângulo retângulo","somou os lados","não usou os lados dados"]},{"c":"EF07MA27","g":7,"a":"Geometria","n":"Ângulos internos de polígonos regulares","p":["EF07MA24","EF06MA18"],"l":2,"d":"S","q":"Quanto mede cada <b>ângulo interno</b> de um hexágono regular?","o":["120°","60°","108°","720°"],"e":["usou o ângulo central","usou o do pentágono","deu a soma de todos"]},{"c":"EF07MA28","g":7,"a":"Geometria","n":"Algoritmo para construir polígono regular","p":["EF07MA27"],"l":0,"d":"P","q":"Para desenhar um pentágono regular numa circunferência, divide-se 360° por 5. Cada ângulo central mede:","o":["72°","108°","60°","1.800°"],"e":["usou o ângulo interno","usou o do hexágono","multiplicou em vez de dividir"]},{"c":"EF07MA29","g":7,"a":"Grandezas e medidas","n":"Toda medida real é aproximada","p":["EF06MA24"],"l":0,"d":"S","q":"Uma régua marca 12,3 cm para um lápis. O comprimento real do lápis:","o":["É aproximado: depende da precisão do instrumento","É exatamente 12,3 cm","É 12 cm","Não pode ser medido"],"e":["achou que medida é exata","arredondou sem motivo","não entendeu medida"]},{"c":"EF07MA30","g":7,"a":"Grandezas e medidas","n":"Volume de blocos (m³, dm³, cm³)","p":["EF06MA24","EF06MA11"],"l":3,"d":"S","q":"Um aquário em forma de bloco mede 50 cm × 30 cm × 40 cm. Qual é o volume?","o":["60.000 cm³","120 cm³","6.000 cm³","600.000 cm³"],"e":["somou as medidas","errou um zero","errou um zero"]},{"c":"EF07MA31","g":7,"a":"Grandezas e medidas","n":"Fórmulas de área de triângulos e quadriláteros","p":["EF06MA24","EF06MA20","EF07MA13"],"l":3,"d":"S","q":"Um triângulo tem base de 10 cm e altura de 6 cm. Qual é a área?","o":["30 cm²","60 cm²","16 cm²","32 cm²"],"e":["esqueceu de dividir por 2","somou as medidas","calculou outra coisa"]},{"c":"EF07MA32","g":7,"a":"Grandezas e medidas","n":"Área por decomposição de figuras","p":["EF07MA31"],"l":0,"d":"S","q":"Uma figura em L é um retângulo de 6 × 4 do qual se tirou um quadrado de 2 × 2 de um canto. Qual é a área da figura?","o":["20","24","28","16"],"e":["esqueceu de tirar o quadrado","somou o quadrado","tirou o quadrado duas vezes"]},{"c":"EF07MA33","g":7,"a":"Grandezas e medidas","n":"O número π","p":["EF07MA22","EF07MA09"],"l":2,"d":"S","q":"Uma roda tem <b>diâmetro</b> de 50 cm. Em uma volta, ela percorre cerca de (use π ≈ 3,14):","o":["157 cm","78,5 cm","314 cm","50 cm"],"e":["usou o raio","dobrou o diâmetro","não usou o π"]},{"c":"EF07MA34","g":7,"a":"Probabilidade e estatística","n":"Probabilidade por frequência em experimentos","p":["EF06MA30"],"l":2,"d":"S","q":"Uma moeda foi lançada 200 vezes e deu cara 96 vezes. Qual foi a frequência de cara?","o":["48%","96%","50%","52%"],"e":["leu o número como porcentagem","deu a probabilidade teórica","calculou a de coroa"]},{"c":"EF07MA35","g":7,"a":"Probabilidade e estatística","n":"Média estatística","p":["EF06MA32","EF06MA11"],"l":2,"d":"S","q":"As notas de Léo foram 6, 8, 7 e 9. Qual é a média?","o":["7,5","30","7","8"],"e":["só somou","arredondou","pegou um valor do meio"]},{"c":"EF07MA36","g":7,"a":"Probabilidade e estatística","n":"Pesquisa censitária ou por amostra","p":["EF06MA33"],"l":3,"d":"N"},{"c":"EF07MA37","g":7,"a":"Probabilidade e estatística","n":"Gráfico de setores","p":["EF06MA31","EF06MA13"],"l":3,"d":"S","q":"Num gráfico de setores, 25% dos alunos preferem vôlei. Qual é o ângulo desse setor?","o":["90°","25°","45°","180°"],"e":["usou a porcentagem como grau","errou a proporção","usou meia volta"]},{"c":"EF08MA01","g":8,"a":"Números","n":"Potências de expoente inteiro; notação científica","p":["EF06MA11","EF07MA04"],"l":11,"d":"S","q":"Como se escreve <b>0,00035</b> em notação científica?","o":["3,5 × 10⁻⁴","3,5 × 10⁴","35 × 10⁻⁵","3,5 × 10⁻⁵"],"e":["errou o sinal do expoente","não deixou um algarismo antes da vírgula","contou casas a mais"]},{"c":"EF08MA02","g":8,"a":"Números","n":"Potência e raiz; expoente fracionário","p":["EF08MA01","EF07MA12"],"l":10,"d":"S","q":"Quanto é <b>8<sup>2/3</sup></b>?","o":["4","2","64","5,33"],"e":["só tirou a raiz cúbica","só elevou ao quadrado","multiplicou base pelo expoente"]},{"c":"EF08MA03","g":8,"a":"Números","n":"Contagem pelo princípio multiplicativo","p":["EF05MA09"],"l":2,"d":"S","q":"Uma senha tem 3 dígitos de 0 a 9, podendo repetir. Quantas senhas diferentes existem?","o":["1.000","30","720","27"],"e":["somou","não deixou repetir","usou 3 opções por casa"]},{"c":"EF08MA04","g":8,"a":"Números","n":"Cálculo de porcentagens","p":["EF07MA02"],"l":1,"d":"S","q":"Um salário de R$ 2.000 teve aumento de <b>7%</b>. Qual é o novo salário?","o":["R$ 2.140","R$ 2.007","R$ 140","R$ 2.700"],"e":["somou 7 reais","deu só o aumento","errou a casa decimal"]},{"c":"EF08MA05","g":8,"a":"Números","n":"Fração geratriz de dízima periódica","p":["EF06MA08","EF07MA18"],"l":4,"d":"S","q":"Qual é a fração geratriz de <b>0,777…</b>?","o":["7/9","7/10","77/100","7/99"],"e":["tratou como decimal exato","tratou como decimal exato","usou período de 2 algarismos"]},{"c":"EF08MA06","g":8,"a":"Álgebra","n":"Valor numérico de expressões algébricas","p":["EF07MA16","EF07MA12"],"l":1,"d":"S","q":"Qual é o valor de <b>2x² − 3x</b> quando x = −2?","o":["14","2","−2","22"],"e":["errou o sinal de −3x","elevou o sinal errado (−2)² = −4","elevou 2x ao quadrado"]},{"c":"EF08MA07","g":8,"a":"Álgebra","n":"Equação com duas incógnitas é uma reta","p":["EF07MA18","EF07MA20"],"l":3,"d":"S","q":"No plano cartesiano, os pontos que satisfazem <b>x + y = 5</b> formam:","o":["Uma reta","Uma parábola","Um único ponto","Uma circunferência"],"e":["confundiu com 2º grau","achou que só há uma solução","confundiu as formas"]},{"c":"EF08MA08","g":8,"a":"Álgebra","n":"Sistemas de equações do 1º grau","p":["EF07MA18","EF08MA07"],"l":0,"d":"S","q":"Num estacionamento há carros e motos: 20 veículos e 60 rodas no total. Quantos são carros?","o":["10","15","5","20"],"e":["chutou proporção","inverteu carros e motos","não montou o sistema"]},{"c":"EF08MA09","g":8,"a":"Álgebra","n":"Equação do 2º grau do tipo ax² = b","p":["EF07MA18","EF08MA02"],"l":1,"d":"S","q":"Quais são as soluções de <b>2x² = 50</b>?","o":["5 e −5","Só 5","25","25 e −25"],"e":["esqueceu a raiz negativa","esqueceu de tirar a raiz","esqueceu de tirar a raiz"]},{"c":"EF08MA10","g":8,"a":"Álgebra","n":"Regra de sequência não recursiva (fluxograma)","p":["EF07MA15"],"l":0,"d":"P","q":"Na sequência <b>4, 7, 10, 13, …</b> qual é o 20º termo?","o":["61","60","64","52"],"e":["fez 20 × 3","contou um passo a mais","errou a regra"]},{"c":"EF08MA11","g":8,"a":"Álgebra","n":"Regra de sequência recursiva (fluxograma)","p":["EF07MA14","EF07MA15"],"l":0,"d":"P","q":"O 1º termo é 2 e cada termo seguinte é <b>o anterior × 3 − 1</b>. Qual é o 4º termo?","o":["41","14","23","122"],"e":["parou no 3º termo","errou a ordem das operações","foi um termo além"]},{"c":"EF08MA12","g":8,"a":"Álgebra","n":"Tipo de variação: direta, inversa ou nenhuma","p":["EF07MA17","EF06MA16"],"l":1,"d":"S","q":"<table><tr><th>x</th><td>1</td><td>2</td><td>3</td><td>4</td></tr><tr><th>y</th><td>12</td><td>6</td><td>4</td><td>3</td></tr></table>Como x e y variam?","o":["São inversamente proporcionais (x · y = 12)","São diretamente proporcionais","Não têm relação de proporção","Crescem juntos"],"e":["confundiu direta com inversa","não testou o produto","leu a tabela errado"]},{"c":"EF08MA13","g":8,"a":"Álgebra","n":"Problemas com grandezas proporcionais (regra de três)","p":["EF07MA17"],"l":6,"d":"S","q":"Se 5 kg de arroz custam R$ 28, quanto custam <b>8 kg</b>?","o":["R$ 44,80","R$ 31,00","R$ 45,00","R$ 40,00"],"e":["somou a diferença","arredondou errado","estimou sem calcular"]},{"c":"EF08MA14","g":8,"a":"Geometria","n":"Propriedades de quadriláteros por congruência","p":["EF07MA24","EF06MA20"],"l":0,"d":"S","q":"Num paralelogramo, um ângulo mede 70°. Quanto medem os outros três?","o":["110°, 70° e 110°","70°, 70° e 70°","90°, 90° e 110°","110°, 110° e 110°"],"e":["achou que todos são iguais","misturou com retângulo","esqueceu o ângulo oposto igual"]},{"c":"EF08MA15","g":8,"a":"Geometria","n":"Construir mediatriz, bissetriz e ângulos","p":["EF07MA22","EF06MA27"],"l":2,"d":"P","q":"A bissetriz de um ângulo de 80° o divide em dois ângulos de:","o":["40°","80°","160°","20°"],"e":["não dividiu","dobrou","dividiu por 4"]},{"c":"EF08MA16","g":8,"a":"Geometria","n":"Algoritmo para construir hexágono regular","p":["EF07MA27"],"l":0,"d":"P","q":"Para construir um hexágono regular com compasso, usamos o fato de que o lado é igual:","o":["Ao raio da circunferência","Ao diâmetro","Ao dobro do raio","À metade do raio"],"e":["confundiu raio com diâmetro","confundiu raio com diâmetro","errou a relação"]},{"c":"EF08MA17","g":8,"a":"Geometria","n":"Mediatriz e bissetriz em problemas","p":["EF08MA15"],"l":0,"d":"S","q":"Duas casas, A e B, ficam numa rua. Quer-se um poste à <b>mesma distância</b> das duas. Ele deve ficar:","o":["Na mediatriz do segmento AB","Na bissetriz de um ângulo","Em cima da casa A","Em qualquer ponto"],"e":["confundiu mediatriz com bissetriz","não entendeu o problema","não entendeu o problema"]},{"c":"EF08MA18","g":8,"a":"Geometria","n":"Composição de transformações geométricas","p":["EF07MA21"],"l":0,"d":"S","q":"Refletir uma figura no eixo y e depois no eixo x é o mesmo que:","o":["Uma rotação de 180° em torno da origem","Uma translação","Uma reflexão na reta y = x","Não mudar nada"],"e":["confundiu as transformações","confundiu as transformações","achou que uma desfaz a outra"]},{"c":"EF08MA19","g":8,"a":"Grandezas e medidas","n":"Áreas com fórmulas (inclui círculo)","p":["EF07MA31","EF07MA33"],"l":1,"d":"S","q":"Qual é a área de um círculo de raio 3 cm? (π ≈ 3,14)","o":["28,26 cm²","18,84 cm²","9,42 cm²","113,04 cm²"],"e":["calculou o comprimento","não elevou o raio ao quadrado","usou o diâmetro"]},{"c":"EF08MA20","g":8,"a":"Grandezas e medidas","n":"Litro, decímetro cúbico e metro cúbico","p":["EF07MA30"],"l":2,"d":"S","q":"Uma caixa-d'água tem 2 m³. Quantos litros ela comporta?","o":["2.000","200","20","20.000"],"e":["errou a conversão","errou a conversão","errou a conversão"]},{"c":"EF08MA21","g":8,"a":"Grandezas e medidas","n":"Volume de recipiente em bloco retangular","p":["EF07MA30","EF08MA20"],"l":1,"d":"S","q":"Um tanque mede 1 m × 0,5 m × 0,8 m. Quantos litros ele comporta?","o":["400","40","4.000","2,3"],"e":["errou a conversão","errou a conversão","somou as medidas"]},{"c":"EF08MA22","g":8,"a":"Probabilidade e estatística","n":"Probabilidade com espaço amostral","p":["EF07MA34","EF08MA03"],"l":1,"d":"S","q":"Lançando duas moedas, qual a chance de saírem <b>duas caras</b>?","o":["1/4","1/2","1/3","2/4"],"e":["olhou uma moeda só","contou só 3 resultados","contou cara-coroa duas vezes"]},{"c":"EF08MA23","g":8,"a":"Probabilidade e estatística","n":"Escolher o tipo de gráfico adequado","p":["EF07MA37"],"l":2,"d":"S","q":"Para mostrar como a temperatura variou ao longo de um mês, o gráfico mais adequado é:","o":["De linha","De setores","Pictograma","Tabela de frequência"],"e":["setores mostram partes de um todo","não mostra evolução","não é gráfico de tendência"]},{"c":"EF08MA24","g":8,"a":"Probabilidade e estatística","n":"Agrupar dados em classes de frequência","p":["EF06MA32"],"l":0,"d":"S","q":"Idades: 12, 13, 13, 14, 15, 15, 15, 16, 17, 18. Quantas idades ficam na classe <b>15 a 17</b> (incluindo 15 e 17)?","o":["5","3","4","6"],"e":["contou só os 15","excluiu um extremo","incluiu o 18"]},{"c":"EF08MA25","g":8,"a":"Probabilidade e estatística","n":"Média, moda e mediana","p":["EF07MA35"],"l":1,"d":"S","q":"Dados: 3, 5, 5, 7, 10. Qual é a <b>mediana</b> e a <b>moda</b>?","o":["Mediana 5 e moda 5","Mediana 6 e moda 5","Mediana 7 e moda 5","Mediana 5 e moda 10"],"e":["usou a média como mediana","pegou o valor errado do meio","confundiu moda com maior valor"]},{"c":"EF08MA26","g":8,"a":"Probabilidade e estatística","n":"Por que fazer pesquisa por amostra","p":["EF07MA36"],"l":2,"d":"N"},{"c":"EF08MA27","g":8,"a":"Probabilidade e estatística","n":"Planejar pesquisa por amostra","p":["EF08MA26"],"l":1,"d":"N"},{"c":"EF09MA01","g":9,"a":"Números","n":"Medidas que não são números racionais","p":["EF08MA02","EF06MA08"],"l":4,"d":"S","q":"A diagonal de um quadrado de lado 1 mede √2. Esse número:","o":["Não pode ser escrito como fração de inteiros","É exatamente 1,41","É igual a 2","É uma dízima periódica"],"e":["achou que a aproximação é exata","confundiu raiz com o número","confundiu irracional com dízima"]},{"c":"EF09MA02","g":9,"a":"Números","n":"Números irracionais na reta","p":["EF09MA01","EF08MA05"],"l":3,"d":"S","q":"Entre quais números inteiros fica <b>√20</b> na reta?","o":["4 e 5","10 e 11","19 e 21","3 e 4"],"e":["dividiu por 2","não tirou a raiz","errou o quadrado"]},{"c":"EF09MA03","g":9,"a":"Números","n":"Cálculos com números reais","p":["EF09MA02","EF08MA02"],"l":2,"d":"S","q":"Quanto é <b>√12 + √27</b>?","o":["5√3","√39","13√3","5√6"],"e":["somou dentro da raiz","simplificou errado","simplificou errado"]},{"c":"EF09MA04","g":9,"a":"Números","n":"Problemas com reais e notação científica","p":["EF09MA03","EF08MA01"],"l":1,"d":"S","q":"A distância da Terra ao Sol é cerca de 1,5 × 10⁸ km, e a luz percorre 3 × 10⁵ km por segundo. Em quantos segundos a luz chega?","o":["500","50","5.000","4,5 × 10¹³"],"e":["errou o expoente","errou o expoente","multiplicou em vez de dividir"]},{"c":"EF09MA05","g":9,"a":"Números","n":"Porcentagens sucessivas e taxas","p":["EF08MA04"],"l":0,"d":"S","q":"Um produto subiu 10% e depois mais 10%. No total, subiu:","o":["21%","20%","10%","110%"],"e":["somou as porcentagens","contou só um aumento","confundiu fator com aumento"]},{"c":"EF09MA06","g":9,"a":"Álgebra","n":"Funções","p":["EF08MA12","EF08MA07"],"l":0,"d":"S","q":"A função é <b>f(x) = 2x + 1</b>. Quanto vale f(3)?","o":["7","6","9","21"],"e":["esqueceu o + 1","somou antes de multiplicar","juntou os algarismos"]},{"c":"EF09MA07","g":9,"a":"Álgebra","n":"Razão entre grandezas diferentes (velocidade, densidade)","p":["EF07MA09","EF08MA13"],"l":0,"d":"S","q":"Um carro percorre 180 km em <b>2 h 30 min</b>. Qual a velocidade média?","o":["72 km/h","90 km/h","78,3 km/h","60 km/h"],"e":["ignorou os 30 min","tratou 2h30 como 2,3 h","usou 3 horas"]},{"c":"EF09MA08","g":9,"a":"Álgebra","n":"Proporcionalidade com várias grandezas e escalas","p":["EF08MA13"],"l":0,"d":"S","q":"Num mapa de escala 1:50.000, uma estrada mede 6 cm. Na realidade, ela mede:","o":["3 km","300 m","30 km","300 km"],"e":["errou a conversão","errou a conversão","errou a conversão"]},{"c":"EF09MA09","g":9,"a":"Álgebra","n":"Fatoração e equação do 2º grau","p":["EF08MA06","EF08MA09"],"l":0,"d":"S","q":"Quais são as raízes de <b>x² − 5x + 6 = 0</b>?","o":["2 e 3","−2 e −3","1 e 6","5 e 6"],"e":["errou os sinais","só olhou o produto","copiou os coeficientes"]},{"c":"EF09MA10","g":9,"a":"Geometria","n":"Demonstrar ângulos em paralelas","p":["EF07MA23"],"l":1,"d":"S","q":"Duas paralelas são cortadas por uma transversal. Dois ângulos <b>colaterais internos</b> medem 3x e x + 20. Quanto vale x?","o":["40","10","50","160"],"e":["igualou os ângulos (são suplementares)","errou a conta","não dividiu"]},{"c":"EF09MA11","g":9,"a":"Geometria","n":"Arcos, ângulos centrais e inscritos","p":["EF09MA10","EF07MA22"],"l":0,"d":"S","q":"Um ângulo inscrito numa circunferência enxerga um arco de 100°. Quanto ele mede?","o":["50°","100°","200°","80°"],"e":["confundiu com ângulo central","dobrou","usou o suplemento"]},{"c":"EF09MA12","g":9,"a":"Geometria","n":"Semelhança de triângulos","p":["EF06MA21","EF07MA24","EF08MA13"],"l":3,"d":"S","q":"Um poste de 2 m faz sombra de 1,5 m. No mesmo horário, uma árvore faz sombra de 6 m. Qual a altura da árvore?","o":["8 m","4,5 m","6,5 m","12 m"],"e":["inverteu a proporção","somou a diferença","dobrou a sombra"]},{"c":"EF09MA13","g":9,"a":"Geometria","n":"Relações no triângulo retângulo e Pitágoras","p":["EF09MA12","EF08MA02"],"l":2,"d":"S","q":"Um triângulo retângulo tem catetos de 6 e 8. Quanto mede a hipotenusa?","o":["10","14","100","48"],"e":["somou os catetos","esqueceu a raiz","multiplicou os catetos"]},{"c":"EF09MA14","g":9,"a":"Geometria","n":"Problemas com Pitágoras e Tales","p":["EF09MA13"],"l":1,"d":"S","q":"Uma escada de 5 m está encostada num muro, com o pé a 3 m do muro. A que altura ela toca o muro?","o":["4 m","2 m","5,8 m","16 m"],"e":["subtraiu as medidas","somou os quadrados em vez de subtrair","esqueceu a raiz"]},{"c":"EF09MA15","g":9,"a":"Geometria","n":"Algoritmo de polígono regular com régua e compasso","p":["EF08MA15"],"l":0,"d":"P","q":"Para inscrever um quadrado numa circunferência com régua e compasso, traçamos:","o":["Dois diâmetros perpendiculares e ligamos as pontas","Quatro raios em ângulos quaisquer","Um diâmetro só","Uma reta tangente"],"e":["não garantiu ângulos iguais","faltou o segundo diâmetro","confundiu a construção"]},{"c":"EF09MA16","g":9,"a":"Geometria","n":"Ponto médio e distância no plano","p":["EF09MA14","EF08MA07"],"l":0,"d":"S","q":"Qual é a distância entre os pontos <b>(1, 2)</b> e <b>(4, 6)</b>?","o":["5","7","25","1"],"e":["somou as diferenças","esqueceu a raiz","subtraiu as diferenças"]},{"c":"EF09MA17","g":9,"a":"Geometria","n":"Vistas ortogonais e perspectiva","p":["EF06MA17"],"l":0,"d":"S","q":"Um cubo visto <b>exatamente de frente</b> aparece como:","o":["Um quadrado","Um cubo em perspectiva","Um hexágono","Um retângulo"],"e":["confundiu vista com perspectiva","imaginou a vista pela diagonal","errou a forma"]},{"c":"EF09MA18","g":9,"a":"Grandezas e medidas","n":"Unidades para medidas muito grandes ou pequenas","p":["EF09MA04"],"l":0,"d":"S","q":"Um nanômetro é 10⁻⁹ metro. Quantos nanômetros há em <b>1 milímetro</b>?","o":["10⁶","10⁹","10⁻⁶","10³"],"e":["converteu do metro, não do milímetro","errou o sinal","errou o expoente"]},{"c":"EF09MA19","g":9,"a":"Grandezas e medidas","n":"Volume de prismas e cilindros","p":["EF08MA21","EF08MA19"],"l":0,"d":"S","q":"Um cilindro tem raio de 2 cm e altura de 10 cm. Qual é o volume? (π ≈ 3,14)","o":["125,6 cm³","62,8 cm³","502,4 cm³","40 cm³"],"e":["não elevou o raio ao quadrado","usou o diâmetro","não usou o π"]},{"c":"EF09MA20","g":9,"a":"Probabilidade e estatística","n":"Eventos dependentes e independentes","p":["EF08MA22"],"l":0,"d":"S","q":"Numa caixa há 3 bolas vermelhas e 2 azuis. Tiram-se duas, <b>sem devolver</b>. Qual a chance de as duas serem vermelhas?","o":["3/10","9/25","3/5","1/5"],"e":["calculou como se devolvesse","olhou só a 1ª retirada","errou a 2ª retirada"]},{"c":"EF09MA21","g":9,"a":"Probabilidade e estatística","n":"Gráficos que enganam","p":["EF08MA23"],"l":0,"d":"S","q":"Um gráfico de barras mostra vendas de 98, 100 e 102, mas o eixo vertical começa em 97. O que acontece?","o":["As diferenças parecem muito maiores do que são","O gráfico fica mais exato","Parece que as vendas dobraram, e dobraram mesmo","Nada muda"],"e":["não percebeu a distorção","confundiu aparência com dado","não percebeu a distorção"]},{"c":"EF09MA22","g":9,"a":"Probabilidade e estatística","n":"Construir o gráfico mais adequado","p":["EF08MA23","EF08MA25"],"l":0,"d":"S","q":"Para mostrar quanto cada região representa no total de vendas de um ano, o gráfico mais adequado é:","o":["De setores","De linha","De dispersão","Histograma"],"e":["linha mostra evolução no tempo","dispersão relaciona duas variáveis","histograma é para classes de valores"]},{"c":"EF09MA23","g":9,"a":"Probabilidade e estatística","n":"Pesquisa por amostra com relatório","p":["EF08MA27"],"l":0,"d":"N"}];
+const RODADA = 15;
+const AREAS = ["Números","Álgebra","Geometria","Grandezas e medidas","Probabilidade e estatística"];
+const AREA_CURTA = {"Números":"Números","Álgebra":"Álgebra","Geometria":"Geometria","Grandezas e medidas":"Medidas","Probabilidade e estatística":"Prob. e estatística"};
+const BY = {}; SK.forEach(s => BY[s.c] = s);
+const DIAG = SK.filter(s => s.q);
+
+// Pré-requisitos "com questão": pula habilidades sem questão e herda os pré-requisitos delas
+const QP = {};
+function qp(c){
+  if (QP[c]) return QP[c];
+  const out = new Set();
+  for (const p of BY[c].p){ if (BY[p].q) out.add(p); else qp(p).forEach(x => out.add(x)); }
+  return QP[c] = [...out];
+}
+const ANC = {};
+function anc(c){
+  if (ANC[c]) return ANC[c];
+  const out = new Set();
+  for (const p of qp(c)){ out.add(p); anc(p).forEach(x => out.add(x)); }
+  return ANC[c] = out;
+}
+
+// ---------- armazenamento (Supabase) ----------
+const SUPA = "https://gvztjrrnmbmmsdaglpoo.supabase.co/rest/v1/rpc/";
+const KEY = "sb_publishable_er_r4FvPDcSKgliWPlA_Vw_caf0C8OH";
+let FAM = null, perfis = {}, temPin = false, online = true;
+function lsGet(k, d){ try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch(e){ return d; } }
+function lsSet(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+async function rpc(fn, args){
+  const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 12000);
+  try {
+    const r = await fetch(SUPA + fn, {method:"POST", headers:{"apikey":KEY, "Content-Type":"application/json"}, body: JSON.stringify(args), signal: ctl.signal});
+    const txt = await r.text();
+    if (!r.ok) throw new Error(txt.includes("familia_invalida") ? "familia_invalida" : "erro " + r.status);
+    online = true; return txt ? JSON.parse(txt) : null;
+  } finally { clearTimeout(to); }
+}
+function clone(x){ return JSON.parse(JSON.stringify(x)); }
+async function carregar(){
+  const d = await rpc("raiz_carregar", {p_familia: FAM});
+  const pend = lsGet("raiz_pendentes", {});
+  perfis = d.perfis || {};
+  for (const id in pend) perfis[id] = pend[id]; // respostas ainda não enviadas ganham
+  temPin = d.tem_pin;
+  lsSet("raiz_cache", perfis);
+}
+async function iniciar(){
+  const u = new URL(location.href);
+  FAM = u.searchParams.get("f") || lsGet("raiz_familia", null);
+  if (!FAM){ $("app").innerHTML = '<div class="kicker">Raiz</div><h1>Link incompleto</h1><p class="mute">Abra pelo link que o seu pai ou mãe mandou.</p>'; return; }
+  lsSet("raiz_familia", FAM);
+  try { await carregar(); }
+  catch(e){
+    if (e.message === "familia_invalida"){ $("app").innerHTML = '<h1>Link inválido</h1><p class="mute">Peça o link de novo.</p>'; return; }
+    online = false; perfis = lsGet("raiz_cache", {}); Object.assign(perfis, lsGet("raiz_pendentes", {}));
+  }
+  enviarPendentes();
+  setInterval(async () => { if (TELA.vivo){ try { await carregar(); render(); } catch(e){} } }, 15000);
+  ir("inicio");
+}
+const enviando = {};
+async function salvarPerfil(id){
+  const pend = lsGet("raiz_pendentes", {}); pend[id] = perfis[id]; lsSet("raiz_pendentes", pend);
+  lsSet("raiz_cache", perfis);
+  if (enviando[id]){ enviando[id].de_novo = true; return; }
+  enviando[id] = {};
+  try {
+    do { enviando[id].de_novo = false; await rpc("raiz_salvar_perfil", {p_familia: FAM, p_id: id, p_dados: perfis[id]}); }
+    while (enviando[id].de_novo);
+    const p2 = lsGet("raiz_pendentes", {}); delete p2[id]; lsSet("raiz_pendentes", p2);
+  } catch(e){ if (online){ online = false; aviso("Sem internet agora. As respostas ficam guardadas e vão quando a conexão voltar."); } }
+  delete enviando[id];
+}
+function enviarPendentes(){ Object.keys(lsGet("raiz_pendentes", {})).forEach(id => { if (perfis[id]) salvarPerfil(id); }); }
+window.addEventListener("online", enviarPendentes);
+async function apagarPerfil(id){
+  delete perfis[id];
+  const pend = lsGet("raiz_pendentes", {}); delete pend[id]; lsSet("raiz_pendentes", pend);
+  try { await rpc("raiz_apagar_perfil", {p_familia: FAM, p_id: id}); } catch(e){ aviso("Sem internet: tente apagar de novo depois."); }
+}
+
+// ---------- motor do diagnóstico ----------
+function palavras(s){ return s.q.replace(/<[^>]+>/g," ").split(/\s+/).filter(Boolean).length + s.o.join(" ").split(/\s+/).length; }
+function limiteChute(s){ return Math.max(4, palavras(s) * 0.15) * 1000; } // abaixo disso não deu tempo nem de ler
+function alvo(p){ return DIAG.filter(s => s.g <= p.ano); }
+function estado(p){
+  const st = {};
+  for (const r of p.respostas){ st[r.c] = r.ok ? (r.rap ? "chute" : "ok") : "falha"; }
+  const pres = new Set();
+  for (const c in st) if (st[c] === "ok") anc(c).forEach(a => { if (!st[a]) pres.add(a); });
+  pres.forEach(a => st[a] = "presumido");
+  return st;
+}
+function proxima(p){
+  const st = estado(p);
+  // 1) cava a raiz: pré-requisitos da falha (ou chute) mais recente primeiro
+  for (let i = p.respostas.length - 1; i >= 0; i--){
+    const r = p.respostas[i];
+    if (st[r.c] === "falha" || st[r.c] === "chute"){
+      const cand = qp(r.c).filter(x => !st[x]).sort((a,b) => BY[b].g - BY[a].g || BY[b].l - BY[a].l);
+      if (cand.length) return cand[0];
+    }
+  }
+  // 2) sobe pelo topo: habilidade sem resposta, do ano mais alto, alternando a área
+  const ult = p.respostas.length ? BY[p.respostas[p.respostas.length-1].c].a : null;
+  const pend = alvo(p).filter(s => !st[s.c]).sort((a,b) => b.g - a.g || (a.a === ult) - (b.a === ult) || b.l - a.l);
+  return pend.length ? pend[0].c : null;
+}
+function resumo(p){
+  const st = estado(p), T = alvo(p);
+  const cont = {ok:0, presumido:0, falha:0, chute:0, pend:0};
+  T.forEach(s => cont[st[s.c] || "pend"]++);
+  const bom = x => x === "ok" || x === "presumido";
+  const raizes = T.filter(s => (st[s.c] === "falha" || st[s.c] === "chute") && qp(s.c).every(x => bom(st[x]))).sort((a,b) => b.l - a.l);
+  const travadas = T.filter(s => (st[s.c] === "falha" || st[s.c] === "chute") && !raizes.includes(s));
+  const niveis = AREAS.map(a => {
+    const anos = [];
+    for (let g = 5; g <= p.ano; g++){
+      const ss = T.filter(s => s.a === a && s.g === g);
+      if (!ss.length){ anos.push({g, k:"na"}); continue; }
+      const ruins = ss.filter(s => st[s.c] === "falha" || st[s.c] === "chute").length;
+      const pend = ss.filter(s => !st[s.c]).length;
+      anos.push({g, k: ruins ? "bad" : pend ? "pend" : "ok"});
+    }
+    let nivel = 4;
+    for (const x of anos){ if (x.k === "ok" || x.k === "na") nivel = x.g; else break; }
+    return {a, anos, nivel};
+  });
+  const total = T.length, feito = total - cont.pend;
+  const rap = p.respostas.filter(r => r.rap).length;
+  return {st, cont, raizes, travadas, niveis, total, feito, rap, fim: !proxima(p)};
+}
+function nomeNivel(n){ return n < 5 ? "Base do 5º" : n + "º ano"; }
+
+// ---------- telas ----------
+const TELA = {nome:"inicio", vivo:false};
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function ir(nome, dados){ Object.assign(TELA, {nome, vivo:false}, dados || {}); render(); window.scrollTo(0,0); }
+function aviso(t){ const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(aviso.t); aviso.t = setTimeout(() => el.classList.remove("show"), 3200); }
+function render(){ const f = VIEWS[TELA.nome]; $("app").innerHTML = '<div class="fade">' + f() + '</div>'; (VIEWS[TELA.nome + "_depois"] || (()=>{}))(); }
+
+const VIEWS = {};
+VIEWS.inicio = () => {
+  const lista = Object.entries(perfis).sort((a,b) => a[1].criado - b[1].criado);
+  return `
+  <div class="kicker">Diagnóstico de Matemática · 5º ao 9º</div>
+  <h1>Raiz</h1>
+  <p class="mute">Descobre o nível real em Matemática e mostra de onde vem cada dificuldade.</p>
+  <h2>Quem vai estudar?</h2>
+  ${lista.map(([id,p]) => { const r = resumo(p); return `
+    <button class="prof" onclick="ir('pronto',{id:'${id}'})">
+      <span class="av">${esc(p.nome[0] || "?").toUpperCase()}</span>
+      <span class="sp"><b>${esc(p.nome)}</b><br><span class="small mute">Até o ${p.ano}º ano · ${r.fim ? "diagnóstico completo" : Math.round(100*r.feito/r.total) + "% do diagnóstico"}</span></span>
+      <span>→</span>
+    </button>`; }).join("")}
+  <button class="btn alt" onclick="ir('novo')">+ Novo perfil</button>
+  <button class="btn" style="margin-top:28px" onclick="ir('pais')">Área dos pais</button>
+  ${online ? "" : '<p class="note">Sem internet: as respostas ficam guardadas neste aparelho e são enviadas quando a conexão voltar.</p>'}`;
+};
+VIEWS.novo = () => `
+  <button class="link" onclick="ir('inicio')">← Voltar</button>
+  <div class="kicker">Novo perfil</div>
+  <h1>Quem é você?</h1>
+  <label>Seu nome<input id="nm" maxlength="24" autocomplete="off" placeholder="Ex.: Bernardo"></label>
+  <label>Qual o último ano que você terminou ou está terminando agora?</label>
+  <div class="chips" id="anos">${[5,6,7,8,9].map(g => `<button class="chip" data-g="${g}">${g}º ano</button>`).join("")}</div>
+  <p class="small mute">O diagnóstico vai até esse ano. Ex.: terminando o 8º, escolha 8º.</p>
+  <button class="btn acc" id="criar" disabled>Criar perfil</button>`;
+VIEWS.novo_depois = () => {
+  let g = null; const ok = () => $("criar").disabled = !(g && $("nm").value.trim());
+  document.querySelectorAll("#anos .chip").forEach(b => b.onclick = () => { g = +b.dataset.g; document.querySelectorAll("#anos .chip").forEach(x => x.classList.toggle("on", x === b)); ok(); });
+  $("nm").oninput = ok;
+  $("criar").onclick = async () => {
+    const id = "p" + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+    perfis[id] = {nome: $("nm").value.trim(), ano: g, criado: Date.now(), respostas: []};
+    await salvarPerfil(id); ir("pronto", {id});
+  };
+};
+VIEWS.pronto = () => {
+  const p = perfis[TELA.id]; if (!p) return VIEWS.inicio();
+  const r = resumo(p);
+  if (r.fim) return `
+    <button class="link" onclick="ir('inicio')">← Início</button>
+    <div class="kicker">${esc(p.nome)}</div><h1>Diagnóstico completo</h1>
+    <button class="btn acc" onclick="ir('resultado',{id:'${TELA.id}',volta:'pronto'})">Ver meu resultado</button>`;
+  return `
+  <button class="link" onclick="ir('inicio')">← Início</button>
+  <div class="kicker">Olá, ${esc(p.nome)}</div>
+  <h1>${p.respostas.length ? "Vamos continuar" : "Antes de começar"}</h1>
+  <div class="card">
+    <p style="margin-top:0">São rodadas de até <b>${RODADA} questões</b>. Não vale nota: o objetivo é achar o que falta na sua base.</p>
+    <p>Quando você erra, o app volta um passo e pergunta o que vem antes, até achar a raiz.</p>
+    <p style="margin-bottom:0"><b>Não sabe? Toque em “Não sei”.</b> É melhor que chutar: o chute esconde o que precisa ser treinado.</p>
+  </div>
+  <div class="bar"><i style="width:${Math.round(100*r.feito/r.total)}%"></i></div>
+  <p class="small mute">${r.feito} de ${r.total} habilidades já avaliadas (direto ou pela lógica dos pré-requisitos)</p>
+  <button class="btn acc" onclick="comecarRodada('${TELA.id}')">${p.respostas.length ? "Começar a próxima rodada" : "Começar"}</button>
+  ${p.respostas.length ? `<button class="btn alt" onclick="ir('resultado',{id:'${TELA.id}',volta:'pronto'})">Ver resultado parcial</button>` : ""}`;
+};
+let RUN = null;
+function comecarRodada(id){ RUN = {id, n:0, rapSeg:0}; proximaQuestao(); }
+function proximaQuestao(){
+  const p = perfis[RUN.id]; const c = proxima(p);
+  if (!c || RUN.n >= RODADA){ ir("fimrodada", {id: RUN.id}); return; }
+  const s = BY[c];
+  const ordem = [0,1,2,3].sort(() => Math.random() - .5);
+  RUN.q = {c, ordem, t0: 0, esc: null};
+  ir("questao");
+}
+VIEWS.questao = () => {
+  const s = BY[RUN.q.c];
+  return `
+  <div class="row"><button class="link" onclick="ir('fimrodada',{id:RUN.id,parou:true})">Pausar</button><span class="sp"></span><span class="small mute">${RUN.n + 1} de ${RODADA}</span></div>
+  <div class="bar"><i style="width:${100*RUN.n/RODADA}%"></i></div>
+  <div style="margin-top:18px"><span class="qtag">${esc(AREA_CURTA[s.a])}</span></div>
+  <div class="stem">${s.q}</div>
+  ${RUN.q.ordem.map(i => `<button class="opt" data-i="${i}">${esc(s.o[i])}</button>`).join("")}
+  <button class="opt ns" data-i="-1">Não sei</button>
+  <button class="btn" id="conf" disabled>Confirmar</button>`;
+};
+VIEWS.questao_depois = () => {
+  RUN.q.t0 = performance.now(); RUN.q.esc = null;
+  document.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    RUN.q.esc = +b.dataset.i;
+    document.querySelectorAll(".opt").forEach(x => x.classList.toggle("on", x === b));
+    $("conf").disabled = false;
+  });
+  $("conf").onclick = responder;
+};
+function responder(){
+  const s = BY[RUN.q.c], p = perfis[RUN.id];
+  const t = Math.round(performance.now() - RUN.q.t0);
+  const i = RUN.q.esc, ok = i === 0, rap = i !== -1 && t < limiteChute(s);
+  p.respostas.push({c: s.c, i, ok, t, rap, ts: Date.now()});
+  salvarPerfil(RUN.id);
+  RUN.n++;
+  if (rap){ RUN.rapSeg++; aviso(RUN.rapSeg >= 2 ? "Foi bem rápido de novo. Leia a questão inteira antes de escolher." : "Essa foi rápida! Lembre de ler com calma."); }
+  else RUN.rapSeg = 0;
+  proximaQuestao();
+}
+VIEWS.fimrodada = () => {
+  const p = perfis[TELA.id], r = resumo(p);
+  return `
+  <div class="kicker">${esc(p.nome)}</div>
+  <h1>${r.fim ? "Diagnóstico completo!" : TELA.parou ? "Pausado" : "Rodada concluída"}</h1>
+  <div class="hero">${Math.round(100*r.feito/r.total)}%</div>
+  <p class="mute">do diagnóstico feito. Tudo fica salvo.</p>
+  ${r.fim ? `<button class="btn acc" onclick="ir('resultado',{id:'${TELA.id}',volta:'inicio'})">Ver meu resultado</button>` :
+  `<button class="btn acc" onclick="comecarRodada('${TELA.id}')">Mais uma rodada</button>
+   <button class="btn alt" onclick="ir('resultado',{id:'${TELA.id}',volta:'inicio'})">Ver resultado parcial</button>`}
+  <button class="btn alt" onclick="ir('inicio')">Sair</button>`;
+};
+function blocoResultado(p, r){
+  return `
+  <div class="stat">
+    <div><b>${r.cont.ok + r.cont.presumido}</b><span>habilidade${r.cont.ok + r.cont.presumido===1?"":"s"} dominada${r.cont.ok + r.cont.presumido===1?"":"s"}</span></div>
+    <div><b style="color:var(--bad)">${r.cont.falha + r.cont.chute}</b><span>com lacuna</span></div>
+    <div><b class="mute">${r.cont.pend}</b><span>ainda sem avaliar</span></div>
+  </div>
+  ${r.fim ? "" : '<p class="note">Resultado parcial: ainda faltam rodadas. Os níveis podem mudar.</p>'}
+  <h2>Nível real por área</h2>
+  <div class="card">
+    ${r.niveis.map(n => `<div class="lvl"><span class="nm">${esc(AREA_CURTA[n.a])}<br><span class="small mute">${nomeNivel(n.nivel)}</span></span>
+      <span class="steps">${n.anos.map(x => `<i class="${x.k}" title="${x.g}º">${x.g}º</i>`).join("")}</span></div>`).join("")}
+    <p class="small mute" style="margin-bottom:0">Verde: ano dominado · Vermelho: tem lacuna · Cinza: falta avaliar</p>
+  </div>
+  <h2>Comece por aqui</h2>
+  ${r.raizes.length ? `<p class="small mute">Estas são as raízes: lacunas cuja base já está firme. Consertando cada uma, destrava o que vem depois.</p>` + r.raizes.slice(0,6).map(s => `
+    <div class="card root"><span class="pill">${s.g}º ano</span><span class="pill">${esc(AREA_CURTA[s.a])}</span>${r.st[s.c]==="chute"?'<span class="pill warn">resposta rápida demais</span>':""}
+      <div style="font-weight:700;margin:8px 0 2px">${esc(s.n)}</div>
+      <div class="small mute">Libera ${s.l} habilidade${s.l===1?"":"s"} à frente</div></div>`).join("") + (r.raizes.length > 6 ? `<p class="small mute">+ ${r.raizes.length - 6} outras raízes</p>` : "")
+  : `<p class="mute">${r.feito ? "Nenhuma lacuna encontrada até aqui." : "Faça a primeira rodada para aparecer aqui."}</p>`}
+  ${r.travadas.length ? `<h2>Vão destravar depois</h2><p class="small mute">Lacunas que dependem das raízes acima. Treine as raízes primeiro.</p><div class="card">${r.travadas.map(s => `<div class="small" style="padding:4px 0">${s.g}º · ${esc(s.n)}</div>`).join("")}</div>` : ""}`;
+}
+VIEWS.resultado = () => {
+  const p = perfis[TELA.id], r = resumo(p);
+  return `<button class="link" onclick="ir('${TELA.volta||"inicio"}',{id:'${TELA.id}'})">← Voltar</button>
+  <div class="kicker">${esc(p.nome)} · até o ${p.ano}º ano</div><h1>Resultado</h1>${blocoResultado(p, r)}`;
+};
+
+// ---------- área dos pais ----------
+let paisOk = false;
+VIEWS.pais = () => {
+  if (paisOk) return VIEWS.painel();
+  const criar = !temPin;
+  return `<button class="link" onclick="ir('inicio')">← Início</button>
+  <div class="kicker">Área dos pais</div><h1>${criar ? "Crie um PIN" : "Digite o PIN"}</h1>
+  <p class="mute">${criar ? "4 números para os filhos não entrarem aqui." : ""}</p>
+  <input id="pin" class="pin" inputmode="numeric" maxlength="4" autocomplete="off">
+  <button class="btn" id="entrar">${criar ? "Salvar PIN" : "Entrar"}</button>`;
+};
+VIEWS.pais_depois = () => {
+  if (paisOk) return VIEWS.painel_depois();
+  $("pin").focus();
+  $("entrar").onclick = async () => {
+    const v = $("pin").value.trim();
+    if (!/^\d{4}$/.test(v)) return aviso("O PIN tem 4 números.");
+    try { const ok = await rpc("raiz_pin", {p_familia: FAM, p_pin: v});
+      if (ok){ temPin = true; paisOk = true; try { await carregar(); } catch(e){} render(); } else aviso("PIN errado.");
+    } catch(e){ aviso("Precisa de internet para entrar aqui."); }
+  };
+};
+VIEWS.painel = () => {
+  TELA.vivo = true;
+  const lista = Object.entries(perfis).sort((a,b) => a[1].criado - b[1].criado);
+  return `<div class="row"><button class="link" onclick="paisOk=false;ir('inicio')">← Sair</button><span class="sp"></span><span class="small mute">● atualiza sozinho</span></div>
+  <div class="kicker">Área dos pais</div><h1>Painel</h1>
+  ${lista.length ? "" : '<p class="mute">Nenhum perfil ainda. Crie um na tela inicial.</p>'}
+  ${lista.map(([id,p]) => { const r = resumo(p); const ult = p.respostas[p.respostas.length-1];
+    return `<button class="prof" onclick="ir('filho',{id:'${id}',aba:'res'})">
+      <span class="av">${esc(p.nome[0]||"?").toUpperCase()}</span>
+      <span class="sp"><b>${esc(p.nome)}</b> <span class="small mute">· até o ${p.ano}º</span><br>
+      <span class="small mute">${p.respostas.length} respostas · ${Math.round(100*r.feito/r.total)}% · ${r.cont.falha + r.cont.chute} lacunas${r.rap ? " · " + r.rap + " rápidas demais" : ""}</span><br>
+      <span class="small mute">${ult ? "Última atividade: " + quando(ult.ts) : "Ainda não começou"}</span></span><span>→</span></button>`; }).join("")}`;
+};
+VIEWS.painel_depois = () => {};
+function quando(ts){
+  const d = (Date.now() - ts)/60000;
+  if (d < 2) return "agora";
+  if (d < 60) return "há " + Math.round(d) + " min";
+  if (d < 1440) return "há " + Math.round(d/60) + " h";
+  return new Date(ts).toLocaleDateString("pt-BR");
+}
+function seg(ms){ return (ms/1000).toFixed(ms < 10000 ? 1 : 0).replace(".", ",") + " s"; }
+VIEWS.filho = () => {
+  if (!paisOk) return VIEWS.pais();
+  TELA.vivo = true;
+  const p = perfis[TELA.id]; if (!p) return VIEWS.painel();
+  const r = resumo(p);
+  const tempos = p.respostas.filter(x => x.i !== -1).map(x => x.t).sort((a,b) => a-b);
+  const med = tempos.length ? tempos[Math.floor(tempos.length/2)] : 0;
+  let corpo = "";
+  if (TELA.aba === "res") corpo = blocoResultado(p, r);
+  else {
+    const lst = p.respostas.map((x, k) => ({...x, k})).reverse().filter(x => TELA.aba === "resp" || (TELA.aba === "erros" && !x.ok) || (TELA.aba === "rap" && x.rap));
+    corpo = `<div class="card">${lst.length ? lst.map(x => { const s = BY[x.c];
+      const marca = x.i === -1 ? '<span class="pill">não sei</span>' : x.ok ? '<span class="pill ok">acertou</span>' : '<span class="pill bad">errou</span>';
+      return `<div class="ans">${marca}${x.rap ? '<span class="pill warn">rápida demais</span>' : ""}<span class="pill">${s.g}º · ${esc(AREA_CURTA[s.a])}</span><span class="small mute">${seg(x.t)}</span>
+        <div style="margin:6px 0 4px;font-weight:600">${esc(s.n)}</div>
+        <div class="small mute">${s.q.replace(/<table.*?<\/table>/s, "[tabela] ").replace(/<br>/g, " ").replace(/<[^>]+>/g, "")}</div>
+        ${x.i === -1 ? "" : `<div class="small" style="margin-top:4px">Respondeu: <b>${esc(s.o[x.i])}</b>${x.ok ? "" : ` · Certa: ${esc(s.o[0])}<br><span class="mute">Erro provável: ${esc(s.e[x.i-1])}</span>`}</div>`}
+      </div>`; }).join("") : '<p class="mute">Nada aqui.</p>'}</div>`;
+  }
+  return `<button class="link" onclick="ir('pais')">← Painel</button>
+  <div class="kicker">${esc(p.nome)} · até o ${p.ano}º ano</div><h1>${esc(p.nome)}</h1>
+  <p class="small mute">${p.respostas.length} respostas · tempo típico por questão: ${med ? seg(med) : "—"} · ${r.rap} rápidas demais</p>
+  <div class="tabs">
+    ${[["res","Resultado"],["resp","Respostas"],["erros","Erros"],["rap","Rápidas"]].map(([k,t]) => `<button class="${TELA.aba===k?"on":""}" onclick="ir('filho',{id:'${TELA.id}',aba:'${k}'})">${t}</button>`).join("")}
+  </div>${corpo}
+  <h2>Opções</h2>
+  <button class="btn alt" id="refazer">Refazer o diagnóstico do zero</button>
+  <button class="btn alt" id="apagar" style="color:var(--bad);border-color:var(--bad)">Apagar perfil</button>`;
+};
+VIEWS.filho_depois = () => {
+  const confirma = (btn, txt, fn) => { let armado = false; btn.onclick = async () => { if (!armado){ armado = true; btn.textContent = txt; return; } await fn(); }; };
+  confirma($("refazer"), "Toque de novo para apagar as respostas", async () => { perfis[TELA.id].respostas = []; await salvarPerfil(TELA.id); ir("filho", {id: TELA.id, aba: "res"}); });
+  confirma($("apagar"), "Toque de novo para apagar o perfil", async () => { await apagarPerfil(TELA.id); ir("pais"); });
+};
+
+iniciar();
+</script>
+</body>
+</html>
